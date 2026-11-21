@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wallpaper Jam Presisi</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/orbitron@5.0.4/index.min.css">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #000000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        .container {
+            display: flex;
+            width: 92%;
+            justify-content: space-around;
+            align-items: center;
+            max-width: 1400px;
+        }
+
+        /* ===== JAM ANALOG — DIPERBESAR ===== */
+        .analog-container {
+            position: relative;
+            width: 500px;
+            height: 500px;
+        }
+
+        .clock-face {
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+
+        .marker-group {
+            position: absolute;
+            width: 12px;
+            height: 100%;
+            top: 0;
+            left: 50%;
+            margin-left: -6px;
+            transform-origin: 50% 50%;
+        }
+
+        .marker-line {
+            position: absolute;
+            width: 3px;
+            height: 30px;
+            background-color: #ffcc00;
+            left: 50%;
+            top: 0;
+            margin-left: -7.5px;
+        }
+
+        .marker-line.right {
+            margin-left: 4.5px;
+        }
+
+        .hand {
+            position: absolute;
+            bottom: 50%;
+            left: 50%;
+            transform-origin: bottom center;
+            border-radius: 4px;
+            z-index: 10;
+            transition: transform 0.05s linear;
+        }
+
+        .hour-hand {
+            width: 9px;
+            height: 135px;
+            background-color: #ffffff;
+            margin-left: -4.5px;
+        }
+
+        .minute-hand {
+            width: 7px;
+            height: 195px;
+            background-color: #aaaaaa;
+            margin-left: -3.5px;
+        }
+
+        .second-hand {
+            width: 2px;
+            height: 215px;
+            background-color: #ff3b30;
+            margin-left: -1px;
+            z-index: 12;
+        }
+
+        .pin {
+            position: absolute;
+            width: 14px;
+            height: 14px;
+            background-color: #ffffff;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            border-radius: 50%;
+            z-index: 13;
+        }
+
+        /* ===== JAM DIGITAL — TETAP SAMA ===== */
+        .digital-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 35px;
+        }
+
+        .time-display {
+            font-size: 7rem;
+            font-weight: 700;
+            color: #ffcc00;
+            font-family: 'Orbitron', sans-serif;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .digit-box {
+            width: 90px;
+            text-align: center;
+            display: inline-block;
+        }
+
+        .separator {
+            width: 30px;
+            text-align: center;
+        }
+
+        .date-display {
+            font-size: 1.8rem;
+            letter-spacing: 6px;
+            font-family: 'Orbitron', sans-serif;
+            opacity: 0.95;
+            text-align: center;
+            color: #ffffff;
+        }
+
+        .day-name-red {
+            color: #ff3b30;
+        }
+
+        .date-red {
+            color: #ff3b30;
+        }
+
+        .location-red {
+            color: #ff3b30;
+        }
+
+        @import url('https://fonts.bunny.net/css2?family=Orbitron:wght@400;600;700&display=swap');
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="analog-container">
+            <div class="clock-face" id="clockFace"></div>
+            <div class="hand hour-hand" id="hourHand"></div>
+            <div class="hand minute-hand" id="minuteHand"></div>
+            <div class="hand second-hand" id="secondHand"></div>
+            <div class="pin"></div>
+        </div>
+
+        <div class="digital-container">
+            <div class="time-display">
+                <span class="digit-box" id="h1">0</span>
+                <span class="digit-box" id="h2">0</span>
+                <span class="separator">:</span>
+                <span class="digit-box" id="m1">0</span>
+                <span class="digit-box" id="m2">0</span>
+                <span class="separator">.</span>
+                <span class="digit-box" id="s1">0</span>
+                <span class="digit-box" id="s2">0</span>
+            </div>
+            <div class="date-display" id="dateDisplay">---, 00/00/0000 <span class="location-red">Mus_batam</span></div>
+        </div>
+    </div>
+
+    <script>
+        const clockFace = document.getElementById('clockFace');
+        for (let i = 0; i < 12; i++) {
+            const group = document.createElement('div');
+            group.className = 'marker-group';
+            group.style.transform = `rotate(${i * 30}deg)`;
+
+            const leftLine = document.createElement('div');
+            leftLine.className = 'marker-line left';
+
+            const rightLine = document.createElement('div');
+            rightLine.className = 'marker-line right';
+
+            group.appendChild(leftLine);
+            group.appendChild(rightLine);
+            clockFace.appendChild(group);
+        }
+
+        function isTanggalMerah(tahun, bulan, hari) {
+            const libur = [
+                `${tahun}-01-01`,
+                '2026-02-17', '2026-02-18',
+                '2026-03-19',
+                '2026-04-03',
+                `${tahun}-05-01`,
+                '2026-05-14',
+                '2026-05-31',
+                `${tahun}-08-17`,
+                '2026-04-23', '2026-04-24',
+                '2026-06-30',
+                '2026-07-19',
+                '2026-09-27',
+                `${tahun}-12-25`,
+                `${tahun}-12-26`
+            ];
+            const bulanP = String(bulan).padStart(2, '0');
+            const hariP = String(hari).padStart(2, '0');
+            const tanggalStr = `${tahun}-${bulanP}-${hariP}`;
+            return libur.includes(tanggalStr);
+        }
+
+        function updateClock() {
+            const now = new Date();
+            const ms = now.getMilliseconds();
+            const seconds = now.getSeconds() + ms / 1000;
+            const minutes = now.getMinutes() + seconds / 60;
+            const hours = (now.getHours() % 12) + minutes / 60;
+
+            const secondDegrees = seconds * 6;
+            const minuteDegrees = minutes * 6;
+            const hourDegrees = hours * 30;
+
+            document.getElementById('secondHand').style.transform = `rotate(${secondDegrees}deg)`;
+            document.getElementById('minuteHand').style.transform = `rotate(${minuteDegrees}deg)`;
+            document.getElementById('hourHand').style.transform = `rotate(${hourDegrees}deg)`;
+
+            const h = String(now.getHours()).padStart(2, '0');
+            const m = String(now.getMinutes()).padStart(2, '0');
+            const s = String(now.getSeconds()).padStart(2, '0');
+
+            document.getElementById('h1').textContent = h[0];
+            document.getElementById('h2').textContent = h[1];
+            document.getElementById('m1').textContent = m[0];
+            document.getElementById('m2').textContent = m[1];
+            document.getElementById('s1').textContent = s[0];
+            document.getElementById('s2').textContent = s[1];
+
+            const dayIndex = now.getDay();
+            const dayName = now.toLocaleDateString('id-ID', { weekday: 'long' });
+            const day = String(now.getDate()).padStart(2, '0');
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const year = now.getFullYear();
+
+            const hariMinggu = dayIndex === 0;
+            const tglMerah = isTanggalMerah(year, now.getMonth() + 1, now.getDate());
+
+            let dayNameHTML = dayName;
+            let tanggalHTML = `${day}/${month}/${year}`;
+            const lokasiHTML = ` <span class="location-red">Mus_batam</span>`;
+
+            if (hariMinggu) {
+                dayNameHTML = `<span class="day-name-red">${dayName}</span>`;
+            }
+
+            if (tglMerah) {
+                tanggalHTML = `<span class="date-red">${day}</span>/${month}/${year}`;
+            }
+
+            document.getElementById('dateDisplay').innerHTML = `${dayNameHTML}, ${tanggalHTML}${lokasiHTML}`;
+        }
+
+        setInterval(updateClock, 50);
+        updateClock();
+    </script>
+</body>
+</html>
